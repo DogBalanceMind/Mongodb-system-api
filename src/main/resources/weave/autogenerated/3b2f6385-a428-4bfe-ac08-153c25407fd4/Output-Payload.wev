@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_3b2f6385_a428_4bfe_ac08_153c25407fd4_Output_Payload = String
+

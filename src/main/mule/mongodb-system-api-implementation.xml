@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="createUserSubFlow" doc:id="79e9d519-5560-4f5d-83bf-2e41ba0f8d88" >
+		<flow-ref doc:name="logInfoSubFlow" doc:id="45b87f06-1bf3-46d6-bbd9-822ee566cc06" name="logInfoSubFlow"/>
+		<mongo:insert-document collectionName="users" doc:name="createUser" doc:id="a48f9705-65d9-4f59-8bb4-800528200b88" config-ref="MongoDB_Config">
+			<mongo:document ><![CDATA[#[output application/json
+---
+payload]]]></mongo:document>
+		</mongo:insert-document>
+		<ee:transform doc:name="setSuccessResponseAnd201HttpStatus" doc:id="a705eec6-25b7-4161-87c8-49c6204b3296" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[output application/json
+---
+"User was created successfully"]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA["201"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="logInfoSubFlow" doc:id="c9b558f3-8522-4184-9950-b9858692e912" name="logInfoSubFlow"/>
+	</sub-flow>
+	<sub-flow name="deleteUserSubFlow" doc:id="3b2f6385-a428-4bfe-ac08-153c25407fd4" >
+		<flow-ref doc:name="logInfoSubFlow" doc:id="f5284437-4481-48ae-af7b-556f2120d2a3" name="logInfoSubFlow"/>
+		<mongo:remove-documents doc:name="deleteUser" doc:id="299bfe13-5da7-4b77-9fc8-ca0052b531a0" config-ref="MongoDB_Config" collectionName="users">
+			<mongo:query ><![CDATA[#[output application/json
+var platform = attributes.queryParams.platform
+---
+{
+	subscribedIn:{
+		'$(platform)': attributes.queryParams.identifier
+	}
+}]]]></mongo:query>
+		</mongo:remove-documents>
+		<choice doc:name="Copy_of_Choice" doc:id="a7a5fc46-3698-430f-8445-b033e62acf80">
+			<when expression="#[sizeOf(payload) == 1]">
+				<ee:transform doc:name="setSuccessResponseAnd201HttpStatus" doc:id="fdda4fda-1e94-42c4-a256-b7f07c13876b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[output application/json
+---
+"User was deleted successfully"]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA["201"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="set404HttpStatusAndCustomErrorDescription" doc:id="672feea2-4c1e-4b32-b84f-b665409eab0a">
+					<ee:message />
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA["404"]]></ee:set-variable>
+						<ee:set-variable variableName="customErrorDescription"><![CDATA["User doesn't exist"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="commonUtilsErrorHandlerSubFlow" doc:id="0ca2cd96-5bf8-4632-b4a1-b6e9f231a093" name="commonUtilsErrorHandlerSubFlow" />
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="logInfoSubFlow" doc:id="e94ba737-d382-4807-8bca-b92d04f61c5b" name="logInfoSubFlow"/>
+	</sub-flow>
+	<sub-flow name="updateUserSubFlow" doc:id="8a999147-0d2f-41be-a486-69f88676d786" >
+		<flow-ref doc:name="logInfoSubFlow" doc:id="6152756e-243c-4cc0-b16e-4abfccc4f1c3" name="logInfoSubFlow"/>
+		<mongo:update-documents collectionName="users" doc:name="Update documents" doc:id="c669e6e2-327e-4f7f-925e-5704dfb126ae" config-ref="MongoDB_Config">
+			<mongo:query ><![CDATA[#[output application/json
+---
+{
+	subscribedIn: payload.subscribedIn
+}]]]></mongo:query>
+			<mongo:content-to-update ><![CDATA[#[output application/json
+---
+payload]]]></mongo:content-to-update>
+		</mongo:update-documents>
+		<choice doc:name="Choice" doc:id="6464891a-4030-40d7-9d23-2640907e028b" >
+			<when expression="#[payload.matched == 1]">
+				<ee:transform doc:name="setSuccessResponseAnd201HttpStatus" doc:id="32562bc2-d730-449c-bcd4-33a4d06d0355">
+			<ee:message>
+				<ee:set-payload><![CDATA[output application/json
+---
+"User was updated successfully"]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA["201"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="set404HttpStatusAndCustomErrorDescription" doc:id="dbcecd65-7278-43eb-b3b8-29a9ae7435d2" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA["404"]]></ee:set-variable>
+						<ee:set-variable variableName="customErrorDescription" ><![CDATA["User doesn't exist"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="commonUtilsErrorHandlerSubFlow" doc:id="878fc5d4-58cb-4552-ac29-37fbb9020c69" name="commonUtilsErrorHandlerSubFlow" />
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="logInfoSubFlow" doc:id="9172459b-4683-49a7-8a60-805bb6dc4863" name="logInfoSubFlow"/>
+	</sub-flow>
+	<sub-flow name="getUserSubFlow" doc:id="1ae5ad2c-8369-4c84-a436-343a245a74ff" >
+		<flow-ref doc:name="logInfoSubFlow" doc:id="9447717d-e457-423b-829d-3a496f29ff44" name="logInfoSubFlow"/>
+		<mongo:find-documents doc:name="getUser" doc:id="95866551-2fe1-4d7f-a083-555c53c2023e" config-ref="MongoDB_Config" collectionName="users" fields=",">
+			<mongo:query ><![CDATA[#[output application/json
+var platform = attributes.queryParams.platform
+---
+{
+	subscribedIn:{
+		'$(platform)': attributes.queryParams.identifier
+	}
+}]]]></mongo:query>
+		</mongo:find-documents>
+		<choice doc:name="Choice" doc:id="9f5d6e78-bd41-4864-a485-5ddced40a5d4" >
+			<when expression="#[sizeOf(payload) == 1]">
+				<ee:transform doc:name="setSuccessResponse" doc:id="df215a74-988d-4dd1-afea-14ed5db0f61c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="set404HttpStatusAndCustomErrorDescription" doc:id="b5c1fe4d-4a86-48e2-9b3d-e368923defbb" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA["404"]]></ee:set-variable>
+						<ee:set-variable variableName="customErrorDescription" ><![CDATA["User doesn't exist"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="commonUtilsErrorHandlerSubFlow" doc:id="2c6e37b5-a4a0-4a54-b8be-9f1cd0d40cef" name="commonUtilsErrorHandlerSubFlow"/>
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="logInfoSubFlow" doc:id="3bc8c605-6e9b-4b55-9a17-9bef696a91d1" name="logInfoSubFlow"/>
+	</sub-flow>
+	<sub-flow name="getAllUsersSubFlow" doc:id="74a3b11f-7353-445f-8468-72fff359ee51" >
+		<flow-ref doc:name="logInfoSubFlow" doc:id="d99146db-132e-420b-8d27-c5c4aba3fabb" name="logInfoSubFlow"/>
+		<mongo:find-documents doc:name="getAllUsers" doc:id="2816b4a9-d87c-42e0-aa00-821adcf9c1bc" config-ref="MongoDB_Config" collectionName="users" fields=","/>
+		<flow-ref doc:name="logInfoSubFlow" doc:id="75685bef-9cc9-4e4e-b5bc-042fd4997701" name="logInfoSubFlow"/>
+	</sub-flow>
+</mule>
