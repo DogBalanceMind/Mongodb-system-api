@@ -40,6 +40,7 @@ local.properties
 flows/
 target/
 **/*.mflow
-mule-artifact.json
+**/application-types.xml
 .mule
 exchange-docs
+**/weave

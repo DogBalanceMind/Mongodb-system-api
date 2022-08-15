@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
-	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
-http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
-	<http:listener-config name="mongodb-system-api-httpListenerConfig">
-        <http:listener-connection host="${listener.https.host}" port="${listener.https.port}" protocol="${listener.https.protocol}">
-			<tls:context >
-				<tls:key-store type="jks" path="keystore.jks" keyPassword="vfrcbv2142" password="vfrcbv2142" alias="mule"/>
-			</tls:context>
-		</http:listener-connection>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+    <http:listener-config name="mongodb-system-api-httpsListenerConfig">
+        <http:listener-connection host="${listener.https.host}" port="${listener.https.port}" protocol="HTTPS">
+            <tls:context>
+                <tls:key-store type="jks" path="keystore.jks" keyPassword="${listener.https.tls.keyPassword}" password="${listener.https.tls.password}" alias="mule" />
+            </tls:context>
+        </http:listener-connection>
     </http:listener-config>
     <apikit:config name="mongodb-system-api-config" api="resource::a33f23d5-1d66-4edc-937f-b275ecc37a3a:mongodb-system-api:1.0.2:raml:zip:mongodb-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-	<mongo:config name="MongoDB_Config" doc:name="MongoDB Config" doc:id="32a56228-45d2-4280-bb66-c8f4ec2de344" >
-		<mongo:connection-string-connection connectionString="${mongodb.connectionString}"/>
-	</mongo:config>
-	<import doc:name="common-utils-global.xml" doc:id="0782d6ab-81d0-49a5-8c85-57254dbddd2a" file="common-utils-global.xml" />
-	<import doc:name="common-utils-error-handler.xml" doc:id="2ebb0074-908f-4ba2-b68f-0579c1fc6781" file="common-utils-error-handler.xml" />
-		<import doc:name="common-utils.xml" doc:id="0f5151f8-845e-46e3-87e2-44aa99cd0398" file="common-utils.xml" />
-			<import doc:name="common-utils-logging.xml" doc:id="3579f7ac-c701-4da6-9e32-fd15ad2d532f" file="common-utils-logging.xml" />
+    <mongo:config name="MongoDB_Config" doc:name="MongoDB Config" doc:id="32a56228-45d2-4280-bb66-c8f4ec2de344">
+        <mongo:connection-string-connection connectionString="${mongodb.connectionString}" />
+    </mongo:config>
+    <import doc:name="common-utils-global.xml" doc:id="0782d6ab-81d0-49a5-8c85-57254dbddd2a" file="common-utils-global.xml" />
+    <import doc:name="common-utils-error-handler.xml" doc:id="2ebb0074-908f-4ba2-b68f-0579c1fc6781" file="common-utils-error-handler.xml" />
+    <import doc:name="common-utils.xml" doc:id="0f5151f8-845e-46e3-87e2-44aa99cd0398" file="common-utils.xml" />
+    <import doc:name="common-utils-logging.xml" doc:id="3579f7ac-c701-4da6-9e32-fd15ad2d532f" file="common-utils-logging.xml" />
 </mule>

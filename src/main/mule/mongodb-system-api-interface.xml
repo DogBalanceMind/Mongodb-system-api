@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
     <flow name="mongodb-system-api-main">
-        <http:listener config-ref="mongodb-system-api-httpListenerConfig" path="${listener.basePath}">
+        <http:listener config-ref="mongodb-system-api-httpsListenerConfig" path="${listener.basePath}">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
@@ -10,14 +10,14 @@
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <flow-ref doc:name="logInfoSubFlow" doc:id="78f4f503-dd54-40ac-8025-bd2f8317f026" name="logInfoSubFlow"/>
-		<flow-ref doc:name="initialSubFlow" doc:id="5c26e207-72f1-45db-9453-a21348e3b629" name="initialSubFlow"/>
-		<apikit:router config-ref="mongodb-system-api-config" />
-        <flow-ref doc:name="logInfoSubFlow" doc:id="2af77ed1-e000-401f-9ef8-c041b134b0cb" name="logInfoSubFlow"/>
-		<error-handler ref="globalErrorHandler"/>
+        <flow-ref doc:name="logInfoSubFlow" doc:id="78f4f503-dd54-40ac-8025-bd2f8317f026" name="logInfoSubFlow" />
+        <flow-ref doc:name="initialSubFlow" doc:id="5c26e207-72f1-45db-9453-a21348e3b629" name="initialSubFlow" />
+        <apikit:router config-ref="mongodb-system-api-config" />
+        <flow-ref doc:name="logInfoSubFlow" doc:id="2af77ed1-e000-401f-9ef8-c041b134b0cb" name="logInfoSubFlow" />
+        <error-handler ref="globalErrorHandler" />
     </flow>
     <flow name="mongodb-system-api-console">
-        <http:listener config-ref="mongodb-system-api-httpListenerConfig" path="${listener.console}">
+        <http:listener config-ref="mongodb-system-api-httpsListenerConfig" path="${listener.console}">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
@@ -27,52 +27,51 @@
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="mongodb-system-api-config" />
-		<error-handler ref="globalErrorHandler" />
+        <error-handler ref="globalErrorHandler" />
     </flow>
     <flow name="delete:\user:mongodb-system-api-config">
-		<ee:transform doc:name="setFlowNameVar" doc:id="a7eb8a12-c151-44f2-b5de-bf516c1fb5bf" >
-			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
-			</ee:variables>
-		</ee:transform>
-		<flow-ref doc:name="deleteUserSubFlow" doc:id="2ff59e84-8e9b-42a3-9f37-762713d49097" name="deleteUserSubFlow"/>
+        <ee:transform doc:name="setFlowNameVar" doc:id="a7eb8a12-c151-44f2-b5de-bf516c1fb5bf">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="deleteUserSubFlow" doc:id="2ff59e84-8e9b-42a3-9f37-762713d49097" name="deleteUserSubFlow" />
     </flow>
     <flow name="patch:\user:application\json:mongodb-system-api-config">
-		<ee:transform doc:name="setFlowNameVar" doc:id="5c3d2515-9ea8-489b-8db8-c93ba2c6e7fa" >
-			<ee:message />
-			<ee:variables >
-				<ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
-			</ee:variables>
-		</ee:transform>
-		<flow-ref doc:name="updateUserSubFlow" doc:id="6ea48972-2ca1-49d1-abab-fd3c3104c459" name="updateUserSubFlow"/>
+        <ee:transform doc:name="setFlowNameVar" doc:id="5c3d2515-9ea8-489b-8db8-c93ba2c6e7fa">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="updateUserSubFlow" doc:id="6ea48972-2ca1-49d1-abab-fd3c3104c459" name="updateUserSubFlow" />
     </flow>
     <flow name="get:\user:mongodb-system-api-config">
-		<ee:transform doc:name="setFlowNameVar" doc:id="b84561af-03d9-4af0-980c-6ec562107b32" >
-			<ee:message />
-			<ee:variables >
-				<ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
-			</ee:variables>
-		</ee:transform>
-		<flow-ref doc:name="getUserSubFlow" doc:id="54fc679c-9234-4fe7-a834-998055bd881b" name="getUserSubFlow"/>
+        <ee:transform doc:name="setFlowNameVar" doc:id="b84561af-03d9-4af0-980c-6ec562107b32">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="getUserSubFlow" doc:id="54fc679c-9234-4fe7-a834-998055bd881b" name="getUserSubFlow" />
     </flow>
     <flow name="get:\users:mongodb-system-api-config">
-		<ee:transform doc:name="setFlowNameVar" doc:id="16ea7357-41d5-4d70-afe6-eae9f9691c4d" >
-			<ee:message />
-			<ee:variables >
-				<ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
-			</ee:variables>
-		</ee:transform>
-		<flow-ref doc:name="getAllUsersSubFlow" doc:id="11aa911a-efef-4ec1-883b-31c2ef04e6fb" name="getAllUsersSubFlow"/>
+        <ee:transform doc:name="setFlowNameVar" doc:id="16ea7357-41d5-4d70-afe6-eae9f9691c4d">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="getAllUsersSubFlow" doc:id="11aa911a-efef-4ec1-883b-31c2ef04e6fb" name="getAllUsersSubFlow" />
     </flow>
     <flow name="post:\user:application\json:mongodb-system-api-config">
-		<ee:transform doc:name="setFlowNameVar" doc:id="0923e954-d86c-4ca3-b4bd-afa2522abd16" >
-			<ee:message />
-			<ee:variables >
-				<ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
-			</ee:variables>
-		</ee:transform>
-		<flow-ref doc:name="createUserSubFlow" doc:id="18349a61-5a62-4504-9786-b3dbbfc07291" name="createUserSubFlow"/>
+        <ee:transform doc:name="setFlowNameVar" doc:id="0923e954-d86c-4ca3-b4bd-afa2522abd16">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable resource="dwl/flowNameVar.dwl" variableName="flowName" />
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="createUserSubFlow" doc:id="18349a61-5a62-4504-9786-b3dbbfc07291" name="createUserSubFlow" />
     </flow>
 </mule>
