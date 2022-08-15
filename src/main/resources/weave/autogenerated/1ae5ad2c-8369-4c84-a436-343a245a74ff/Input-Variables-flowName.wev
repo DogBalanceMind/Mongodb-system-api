@@ -1,4 +1,0 @@
-%dw 2.0
-
-type auto_1ae5ad2c_8369_4c84_a436_343a245a74ff_Input_Variables_flowName = String | Null
-
