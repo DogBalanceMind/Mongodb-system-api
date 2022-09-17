@@ -36,8 +36,9 @@ var platform = attributes.queryParams.platform
 	}
 }]]]></mongo:query>
 		</mongo:remove-documents>
-		<choice doc:name="Copy_of_Choice" doc:id="a7a5fc46-3698-430f-8445-b033e62acf80">
-			<when expression="#[sizeOf(payload) == 1]">
+		<set-variable value="#[sizeOf(payload) &gt;= 1]" doc:name="setIfDeleted" doc:id="4f5f227b-bb19-436e-a84f-cb277db082ef" variableName="ifDeleted"/>
+		<choice doc:name="choice" doc:id="a7a5fc46-3698-430f-8445-b033e62acf80">
+			<when expression="#[vars.ifDeleted]">
 				<ee:transform doc:name="setSuccessResponseAnd201HttpStatus" doc:id="fdda4fda-1e94-42c4-a256-b7f07c13876b" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[output application/json
@@ -74,8 +75,9 @@ var platform = attributes.queryParams.platform
 ---
 payload]]]></mongo:content-to-update>
 		</mongo:update-documents>
+		<set-variable value="#[payload.matched == 1]" doc:name="setIfUpdated" doc:id="1dca2c6e-610e-4fce-a727-db9817cbf8c9" variableName="ifUpdated"/>
 		<choice doc:name="Choice" doc:id="6464891a-4030-40d7-9d23-2640907e028b" >
-			<when expression="#[payload.matched == 1]">
+			<when expression="#[vars.ifUpdated]">
 				<ee:transform doc:name="setSuccessResponseAnd201HttpStatus" doc:id="32562bc2-d730-449c-bcd4-33a4d06d0355">
 			<ee:message>
 				<ee:set-payload><![CDATA[output application/json
@@ -112,8 +114,9 @@ var platform = attributes.queryParams.platform
 	}
 }]]]></mongo:query>
 		</mongo:find-documents>
+		<set-variable value="#[sizeOf(payload) == 1]" doc:name="setIfUserExists" doc:id="2d993cc8-4f75-4b9e-822a-0017b40eb6f8" variableName="ifUserExists"/>
 		<choice doc:name="Choice" doc:id="9f5d6e78-bd41-4864-a485-5ddced40a5d4" >
-			<when expression="#[sizeOf(payload) == 1]">
+			<when expression="#[vars.ifUserExists]">
 				<ee:transform doc:name="setSuccessResponse" doc:id="df215a74-988d-4dd1-afea-14ed5db0f61c" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
