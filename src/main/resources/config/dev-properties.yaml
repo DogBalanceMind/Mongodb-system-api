@@ -1,0 +1,13 @@
+listener:
+  basePath: "/mongodb-sa/*"
+  console: "/console/*"
+  https:
+    host: "0.0.0.0"
+    port: "8081"
+    tls:
+      keyPassword: vfrcbv2142
+      password: vfrcbv2142
+    
+mongodb:
+  connectionString: 
+  
